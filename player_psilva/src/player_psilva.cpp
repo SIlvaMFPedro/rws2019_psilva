@@ -237,7 +237,7 @@ namespace rws_silvamfpedro {
                 }
                 string prey = team_preys->getPlayerNames().at(idx_closest_prey);
                 string hunter = team_hunters->getPlayerNames().at(idx_closest_hunter);
-                string boca = "I'm coming for you " + prey + " and i am running away from " + hunter;
+                string boca = "Prey: " + prey + "Hunter: " + hunter;
 
                 float distance_to_arena_center;
                 float angle_to_arena_center;
