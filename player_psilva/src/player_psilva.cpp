@@ -235,7 +235,16 @@ namespace rws_silvamfpedro {
                 else{
                     angle = angle_to_preys[idx_closest_prey];
                 }
-                string prey = team_preys->getPlayerNames().at(idx_closest_prey);
+                string prey = " ";
+                if (idx_closest_prey != -1)
+                {
+                    prey = msg->blue_alive[idx_closest_prey];
+                    if (prey != last_prey)
+                    {
+//                        something_changed = true;
+                        last_prey = prey;
+                    }
+                }
                 string hunter = team_hunters->getPlayerNames().at(idx_closest_hunter);
                 string boca = "Prey: " + prey + "Hunter: " + hunter;
 
@@ -329,6 +338,7 @@ namespace rws_silvamfpedro {
             tf::TransformListener tl;
             boost::shared_ptr<Publisher> vis_pub;
             boost::shared_ptr<Publisher> bocas_pub;
+            string last_prey = " ";
     };
 
 
