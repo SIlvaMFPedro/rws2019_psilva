@@ -269,8 +269,13 @@ namespace rws_silvamfpedro {
                 dx > dx_max ? dx = dx_max : dx = dx;
 
                 double angle_max = M_PI/30;
-                fabs(angle) > fabs(angle_max) ? angle = angle_max*angle/fabs(angle) : angle = angle;
+                if(angle != 0){
+                    fabs(angle) > fabs(angle_max) ? angle = angle_max*angle/fabs(angle) : angle = angle;
 
+                }
+                else{
+                    angle = M_PI;
+                }
                 //STEP 3: define local movement
                 tf::Transform T1;
                 T1.setOrigin( tf::Vector3(dx, 0.0, 0.0) );
