@@ -187,10 +187,10 @@ namespace rws_silvamfpedro {
                 vector<float> angle_to_hunters;
 
                 //For each prey find the closest. Then follow it
-                for (size_t i =0; i< team_preys->getPlayerNames().size(); i++)
+                for (size_t i =0; i < msg->blue_alive.size(); i++)
                 {
-                    ROS_WARN_STREAM("team_preys = " << team_preys->getPlayerNames().at(i));
-                    std::tuple<float, float> tuple = getDistanceAndAngleToPlayer(team_preys->getPlayerNames().at(i));
+                    ROS_WARN_STREAM("team_preys = " << msg->blue_alive[i]);
+                    std::tuple<float, float> tuple = getDistanceAndAngleToPlayer(msg->blue_alive[i]);
                     distance_to_preys.push_back(std::get<0>(tuple));
                     angle_to_preys.push_back(std::get<1>(tuple));
 
@@ -352,7 +352,7 @@ int main(int argc, char** argv){
     ros::Rate r(20);
     while(ros::ok()){
         //ros::Duration(1).sleep();
-        player.printInfo();
+        //player.printInfo();
         spinOnce();
     }
 
