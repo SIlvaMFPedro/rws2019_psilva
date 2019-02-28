@@ -109,7 +109,9 @@ namespace rws_silvamfpedro {
                 bocas_pub = (boost::shared_ptr<ros::Publisher>) new ros::Publisher;
                 (*bocas_pub) = n.advertise<visualization_msgs::Marker>("bocas", 0);
                 voice_pub = (boost::shared_ptr<ros::Publisher>) new ros::Publisher;
-                (*voice_pub) = n.advertise<sound_play::SoundRequest>("robot_sound", 10);
+                (*voice_pub) = n.advertise<sound_play::SoundRequest>("robotsound", 10);
+                my_timer = (boost::shared_ptr<Timer>) new ros::Timer;
+                (*my_timer) = n.createTimer(ros::Duration(5), &MyPlayer::timerCallback, this);
                 //create hunter teams
                 if (team_red->playerBelongsToTeam(player_name)){
                     team_mine = team_red;
@@ -173,7 +175,7 @@ namespace rws_silvamfpedro {
                 return getDistanceAndAngleToPlayer("world");
             }
             void makeAPlayCallBack(rws2019_msgs::MakeAPlayConstPtr msg){
-                ROS_INFO("Received a new ROS message");
+//                ROS_INFO("Received a new ROS message");
 
                 //STEP 1: Find out where I am
                 tf::StampedTransform T0;
@@ -194,7 +196,7 @@ namespace rws_silvamfpedro {
                 //For each prey find the closest. Then follow it
                 for (size_t i =0; i < msg->blue_alive.size(); i++)
                 {
-                    ROS_WARN_STREAM("team_preys = " << msg->blue_alive[i]);
+//                    ROS_WARN_STREAM("team_preys = " << msg->blue_alive[i]);
                     std::tuple<float, float> tuple = getDistanceAndAngleToPlayer(msg->blue_alive[i]);
                     distance_to_preys.push_back(std::get<0>(tuple));
                     angle_to_preys.push_back(std::get<1>(tuple));
@@ -202,7 +204,7 @@ namespace rws_silvamfpedro {
                 }
                 //For each hunter find the closest. Then run away
                 for (size_t i = 0; i < team_hunters->getPlayerNames().size(); i++){
-                    ROS_WARN_STREAM("team_hunters = " << team_hunters->getPlayerNames().at(i));
+//                    ROS_WARN_STREAM("team_hunters = " << team_hunters->getPlayerNames().at(i));
                     std::tuple<float, float> tuple = getDistanceAndAngleToPlayer(team_hunters->getPlayerNames().at(i));
                     distance_to_hunters.push_back(std::get<0>(tuple));
                     angle_to_hunters.push_back(std::get<1>(tuple));
@@ -253,13 +255,6 @@ namespace rws_silvamfpedro {
                 string hunter = team_hunters->getPlayerNames().at(idx_closest_hunter);
                 string boca = "P(" + prey + ") H(" + hunter + ")";
 
-                sound_play::SoundRequest sound_request;
-                sound_request.sound = -3;
-                sound_request.command = 1;
-                sound_request.volume = 1.0;
-                sound_request.arg = "Omae wa mou shindeiru " + prey;
-                sound_request.arg2 = "voice_kal_diphone";
-                voice_pub->publish(sound_request);
 
                 float distance_to_arena_center;
                 float angle_to_arena_center;
@@ -385,11 +380,19 @@ namespace rws_silvamfpedro {
                 ROS_INFO("sending back response: [%ld]", (long int)res.result);
                 return true;
             }
-
             bool doVoiceCallback(sound_play::SoundClient &client){
                 client.playWave("Oma wa mou shindeiru", 1.0);
                 ROS_INFO("Played message!\n");
                 return true;
+            }
+            void timerCallback(const ros::TimerEvent& event){
+                sound_play::SoundRequest sound_request;
+                sound_request.sound = -3;
+                sound_request.command = 1;
+                sound_request.volume = 1.0;
+                sound_request.arg = "Omae wa mou shindeiru ";
+                sound_request.arg2 = "voice_kal_diphone";
+//                voice_pub->publish(sound_request);
             }
         private:
             //teams
@@ -404,6 +407,7 @@ namespace rws_silvamfpedro {
             boost::shared_ptr<Publisher> vis_pub;
             boost::shared_ptr<Publisher> bocas_pub;
             boost::shared_ptr<Publisher> voice_pub;
+            boost::shared_ptr<Timer> my_timer;
             string last_prey = " ";
     };
 
