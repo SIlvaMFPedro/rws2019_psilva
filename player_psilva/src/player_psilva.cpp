@@ -3,6 +3,7 @@
 #include <ros/ros.h>
 #include <rws2019_msgs/MakeAPlay.h>
 #include <rws2019_msgs/DoTheMath.h>
+#include <sound_play/sound_play.h>
 #include <tf/transform_listener.h>
 #include <tf/transform_broadcaster.h>
 #include <visualization_msgs/Marker.h>
@@ -107,6 +108,8 @@ namespace rws_silvamfpedro {
                 (*vis_pub) = n.advertise<visualization_msgs::Marker>("player_names", 0);
                 bocas_pub = (boost::shared_ptr<ros::Publisher>) new ros::Publisher;
                 (*bocas_pub) = n.advertise<visualization_msgs::Marker>("bocas", 0);
+                voice_pub = (boost::shared_ptr<ros::Publisher>) new ros::Publisher;
+                (*voice_pub) = n.advertise<sound_play::SoundRequest>("robot_sound", 10);
                 //create hunter teams
                 if (team_red->playerBelongsToTeam(player_name)){
                     team_mine = team_red;
@@ -250,6 +253,14 @@ namespace rws_silvamfpedro {
                 string hunter = team_hunters->getPlayerNames().at(idx_closest_hunter);
                 string boca = "P(" + prey + ") H(" + hunter + ")";
 
+                sound_play::SoundRequest sound_request;
+                sound_request.sound = -3;
+                sound_request.command = 1;
+                sound_request.volume = 1.0;
+                sound_request.arg = "Omae wa mou shindeiru " + prey;
+                sound_request.arg2 = "voice_kal_diphone";
+                voice_pub->publish(sound_request);
+
                 float distance_to_arena_center;
                 float angle_to_arena_center;
 
@@ -375,6 +386,11 @@ namespace rws_silvamfpedro {
                 return true;
             }
 
+            bool doVoiceCallback(sound_play::SoundClient &client){
+                client.playWave("Oma wa mou shindeiru", 1.0);
+                ROS_INFO("Played message!\n");
+                return true;
+            }
         private:
             //teams
             boost::shared_ptr<Team> team_red;
@@ -387,6 +403,7 @@ namespace rws_silvamfpedro {
             tf::TransformListener tl;
             boost::shared_ptr<Publisher> vis_pub;
             boost::shared_ptr<Publisher> bocas_pub;
+            boost::shared_ptr<Publisher> voice_pub;
             string last_prey = " ";
     };
 
@@ -409,8 +426,9 @@ int main(int argc, char** argv){
     Subscriber sub = nh.subscribe("/make_a_play", 100, &rws_silvamfpedro::MyPlayer::makeAPlayCallBack, &player);
 
     //Create ROS Service
-    ros::ServiceServer service = nh.advertiseService("do_the_math", &rws_silvamfpedro::MyPlayer::doTheMathCallback, &player);
+    ServiceServer service = nh.advertiseService("do_the_math", &rws_silvamfpedro::MyPlayer::doTheMathCallback, &player);
     ROS_INFO("Ready to do the math");
+
 
     ros::Rate r(20);
     while(ros::ok()){
