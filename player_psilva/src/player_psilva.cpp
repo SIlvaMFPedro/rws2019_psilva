@@ -332,7 +332,44 @@ namespace rws_silvamfpedro {
             }
 
             bool doTheMathCallback(rws2019_msgs::DoTheMath::Request &req, rws2019_msgs::DoTheMath::Response &res){
-                res.result = req.a + req.b;
+//                switch(req.op){
+//                    case "+":
+//                        res.result = req.a + req.b;
+//                        break;
+//                    case "-":
+//                        res.result = req.a - req.b;
+//                        break;
+//                    case "*":
+//                        res.result = (req.a)*(req.b);
+//                        break;
+//                    case "/":
+//                        res.result = (req.a)/(req.b);
+//                        break;
+//                    case "^":
+//                        res.result = (req.a)^(req.b);
+//                        break;
+//                    default:
+//                        ROS_INFO("Invalid service operation");
+//                        break;
+//                }
+                if(req.op == "+"){
+                    res.result = req.a + req.b;
+                }
+                else if(req.op == "-"){
+                    res.result = req.a - req.b;
+                }
+                else if(req.op == "*"){
+                    res.result = req.a * req.b;
+                }
+                else if(req.op == "/"){
+                    res.result = req.a / req.b;
+                }
+                else if(req.op == "^"){
+                    res.result = (req.a)^(req.b);
+                }
+                else{
+                    ROS_INFO("Invalid Service Operation");
+                }
                 ROS_INFO("request: x=%ld, y=%ld", (long int)req.a, (long int)req.b);
                 ROS_INFO("sending back response: [%ld]", (long int)res.result);
                 return true;
