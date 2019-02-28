@@ -2,9 +2,11 @@
 #include <vector>
 #include <ros/ros.h>
 #include <rws2019_msgs/MakeAPlay.h>
+#include <rws2019_msgs/DoTheMath.h>
 #include <tf/transform_listener.h>
 #include <tf/transform_broadcaster.h>
 #include <visualization_msgs/Marker.h>
+#include <cstdlib>
 
 using namespace std;
 using namespace boost;
@@ -329,6 +331,13 @@ namespace rws_silvamfpedro {
                 bocas_pub->publish( bocas_marker );
             }
 
+            bool doTheMathCallback(rws2019_msgs::DoTheMath::Request &req, rws2019_msgs::DoTheMath::Response &res){
+                res.result = req.a + req.b;
+                ROS_INFO("request: x=%ld, y=%ld", (long int)req.a, (long int)req.b);
+                ROS_INFO("sending back response: [%ld]", (long int)res.result);
+                return true;
+            }
+
         private:
             //teams
             boost::shared_ptr<Team> team_red;
@@ -361,6 +370,10 @@ int main(int argc, char** argv){
 
     //Create ROS Subscriber
     Subscriber sub = nh.subscribe("/make_a_play", 100, &rws_silvamfpedro::MyPlayer::makeAPlayCallBack, &player);
+
+    //Create ROS Service
+    ros::ServiceServer service = nh.advertiseService("do_the_math", &rws_silvamfpedro::MyPlayer::doTheMathCallback, &player);
+    ROS_INFO("Ready to do the math");
 
     ros::Rate r(20);
     while(ros::ok()){
