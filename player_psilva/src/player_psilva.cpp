@@ -141,7 +141,7 @@ namespace rws_silvamfpedro {
                 tb.sendTransform(tf::StampedTransform(Tglobal, ros::Time::now(), "world", this->getPlayerName()));
                 ros::Duration(0.1).sleep();
                 tb.sendTransform(tf::StampedTransform(Tglobal, ros::Time::now(), "world", this->getPlayerName()));
-                printInfo();
+                //printInfo();
             }
             void printInfo(){
                 ROS_INFO_STREAM("My name is " << this->getPlayerName() << " and my team is " << this->getTeamName());
